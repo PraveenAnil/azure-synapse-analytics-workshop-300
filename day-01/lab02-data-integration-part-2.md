@@ -143,64 +143,96 @@ For the remainder of this guide, the following terms will be used for various AS
 
 ### Task 2: Create user profile datasets
 
-User profile data comes from two different data sources. In lab 1, you created datasets for these sources: `asal400_ecommerce_userprofiles_source_SUFFIX` and `asal400_customerprofile_cosmosdb_SUFFIX` (*complete Task 3 below if you did not complete lab 1*). The customer profile data from an e-commerce system that provides top product purchases for each visitor of the site (customer) over the past 12 months is stored within JSON files in the data lake. User profile data containing, among other things, product preferences and product reviews is stored as JSON documents in Cosmos DB.
+User profile data comes from two different data sources. In lab 1, you created datasets for these sources: `asal300_ecommerce_userprofiles_source_SUFFIX` and `asal300_customerprofile_cosmosdb_SUFFIX` (*complete Task 3 below if you did not complete lab 1*). The customer profile data from an e-commerce system that provides top product purchases for each visitor of the site (customer) over the past 12 months is stored within JSON files in the data lake. User profile data containing, among other things, product preferences and product reviews is stored as JSON documents in Cosmos DB.
 
 In this task, you'll create datasets for the SQL tables that will serve as data sinks for data pipelines you'll create later in this lab.
 
-1. Create a new **Azure Synapse Analytics** dataset with the following characteristics:
+1. Navigate to the **Data** hub.
 
-    - **Name**: Enter `asal400_wwi_userproductreviews_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
+    ![The Data menu item is highlighted.](media/data-hub.png "Data hub")
+
+2. Select **+** in the toolbar, then select **Dataset** to create a new dataset.
+
+    ![Create new Dataset.](media/new-dataset.png "New Dataset")
+
+3. Create a new **Azure Synapse Analytics** dataset with the following characteristics:
+
+    - **Name**: Enter `asal300_wwi_userproductreviews_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `SqlPool01` service.
     - **Table name**: Select `wwi.UserProductReviews_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Import schema**: Select `From connection/store`.
 
     ![New dataset form is displayed with the described configuration.](media/new-dataset-userproductreviews.png "New dataset")
 
-2. Create a new **Azure Synapse Analytics** dataset with the following characteristics:
+4. Create a new **Azure Synapse Analytics** dataset with the following characteristics:
 
-    - **Name**: Enter `asal400_wwi_usertopproductpurchases_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_wwi_usertopproductpurchases_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `SqlPool01` service.
     - **Table name**: Select `wwi.UserTopProductPurchases_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Import schema**: Select `From connection/store`.
 
     ![New dataset form is displayed with the described configuration.](media/new-dataset-usertopproductpurchases.png "New dataset")
 
-3. Select **Publish all** to save your new resources.
+5. Select **Publish all** to save your new resources.
 
     ![Publish all is highlighted.](media/publish-all-1.png "Publish all")
 
-### Task 5: OPTIONAL - Create datasets from Lab 1
+### Task 3: OPTIONAL - Create linked service and datasets from Lab 1
 
-If you **did not** complete Exercise 1 in lab 1, where you configure the linked service and create datasets, complete the steps below to create two additional datasets for this lab (`asal400_ecommerce_userprofiles_source_SUFFIX` and `asal400_customerprofile_cosmosdb_SUFFIX`).
+If you **did not** complete Exercise 1 in lab 1, where you configure the linked service and create datasets, complete the steps below to create the Azure Cosmos DB linked service and two additional datasets for this lab (`asal300_ecommerce_userprofiles_source_SUFFIX` and `asal300_customerprofile_cosmosdb_SUFFIX`).
 
-1. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
+1. Open Synapse Analytics Studio, and then navigate to the **Manage** hub.
 
-    - **Name**: Enter `asal400_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
+    ![The Manage menu item is highlighted.](media/manage-hub.png "Manage hub")
+
+2. Select **Linked services** in the left-hand menu, then select **+ New** to create a new linked service.
+
+    ![The Manage hub, Linked services menu item, and New button are all highlighted.](media/new-linked-service.png "Linked services")
+
+3. In the `New linked service` dialog, select the **Azure Cosmos DB (SQL API)** linked service, then select **Continue**.
+
+    ![The Azure Cosmos DB SQL API linked service is selected.](media/select-cosmos-db-linked-service.png "New linked service")
+
+4. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**), select the Cosmos DB account name and then select the **CustomerProfile** `Database name` value. Select **Create** to continue.
+
+    ![New Azure Cosmos DB linked service.](media/create-cosmos-db-linked-service.png "New linked service")
+
+5. Navigate to the **Data** hub.
+
+    ![The Data menu item is highlighted.](media/data-hub.png "Data hub")
+
+6. Select **+** in the toolbar, then select **Dataset** to create a new dataset.
+
+    ![Create new Dataset.](media/new-dataset.png "New Dataset")
+
+7. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
+
+    - **Name**: Enter `asal300_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the Azure Cosmos DB linked service.
     - **Collection**: Select `OnlineUserProfile01`.
 
     ![New Azure Cosmos DB dataset.](media/create-cosmos-db-dataset.png "New Cosmos DB dataset")
 
-2. After creating the dataset, navigate to its **Connection** tab, then select **Preview data**.
+8. After creating the dataset, navigate to its **Connection** tab, then select **Preview data**.
 
     ![The preview data button on the dataset is highlighted.](media/cosmos-dataset-preview-data-link.png "Preview data")
 
-3. Preview data queries the selected Azure Cosmos DB collection and returns a sample of the documents within. The documents are stored in JSON format and include a `userId` field, `cartId`, `preferredProducts` (an array of product IDs that may be empty), and `productReviews` (an array of written product reviews that may be empty). We will use this data in lab 2.
+9. Preview data queries the selected Azure Cosmos DB collection and returns a sample of the documents within. The documents are stored in JSON format and include a `userId` field, `cartId`, `preferredProducts` (an array of product IDs that may be empty), and `productReviews` (an array of written product reviews that may be empty). We will use this data in lab 2.
 
     ![A preview of the Azure Cosmos DB data is displayed.](media/cosmos-db-dataset-preview-data.png "Preview data")
 
-4. Select the **Schema** tab, then select **Import schema**. Synapse Analytics evaluates the JSON documents within the collection and infers the schema based on the nature of the data within. Since we are only storing one document type in this collection, you will see the inferred schema for all documents within.
+10. Select the **Schema** tab, then select **Import schema**. Synapse Analytics evaluates the JSON documents within the collection and infers the schema based on the nature of the data within. Since we are only storing one document type in this collection, you will see the inferred schema for all documents within.
 
     ![The inferred schema for the Azure Cosmos DB documents is displayed.](media/cosmos-db-dataset-schema.png "Schema")
 
-5. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
+11. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/online-user-profiles-02` path.
     - **Import schema**: Select `From connection/store`.
 
-6. Select **Publish all** to save your new resources.
+12. Select **Publish all** to save your new resources.
 
     ![Publish all is highlighted.](media/publish-all-1.png "Publish all")
 
@@ -216,7 +248,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     ![The new data flow link is highlighted.](media/new-data-flow-link.png "New data flow")
 
-3. In the **General** tab of the new data flow, update the **Name** to the following: `ASAL400 - Lab 2 - Write User Profile Data to ASA SUFFIX` (where `SUFFIX` is your **student ID**).
+3. In the **General** tab of the new data flow, update the **Name** to the following: `lab2_write_user_profile_data_asa_SUFFIX` (where `SUFFIX` is your **student ID**).
 
 4. Select **Add Source** on the data flow canvas.
 
@@ -225,7 +257,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 5. Under **Source settings**, configure the following:
 
     - **Output stream name**: Enter `EcommerceUserProfiles`.
-    - **Dataset**: Select `asal400_ecommerce_userprofiles_source_SUFFIX`.
+    - **Dataset**: Select `asal300_ecommerce_userprofiles_source_SUFFIX`.
 
     ![The source settings are configured as described.](media/data-flow-user-profiles-source-settings.png "Source settings")
 
@@ -236,9 +268,10 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     ![The source options are configured as described.](media/data-flow-user-profiles-source-options.png "Source options")
 
-<!-- 7. Select **Data preview** and select **Refresh** to display the data. Select a row under the `topProductPurchases` column to see an expanded view of the array.
+    <!-- 7. Select **Data preview** and select **Refresh** to display the data. Select a row under the `topProductPurchases` column to see an expanded view of the array.
 
-    ![The data preview tab is displayed with a sample of the file contents.](media/data-flow-user-profiles-data-preview.png "Data preview") -->
+    ![The data preview tab is displayed with a sample of the file contents.](media/data-flow-user-profiles-data-preview.png "Data preview") 
+    -->
 
 7. Select the **+** to the right of the `EcommerceUserProfiles` source, then select the **Derived Column** schema modifier from the context menu.
 
@@ -273,6 +306,10 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
         | topProductPurchases.productId | `productId` |
         | topProductPurchases.itemsPurchasedLast12Months | `itemsPurchasedLast12Months` |
 
+    Select **+ Add mapping**, then **Fixed mapping** to add entries for each of the input columns as described in the table above.
+
+    ![The add mapping and fixed mapping menu items are highlighted.](media/data-flow-user-profiles-flatten-add-mapping.png "Add mapping")
+
     ![The flatten settings are configured as described.](media/data-flow-user-profiles-flatten-settings.png "Flatten settings")
 
     These settings provide a flattened view of the data source with one or more rows per `visitorId`, similar to when you explored the data within the Spark notebook in lab 1. Using data preview requires you to enable Debug mode, which we are not enabling for this lab. *The following screenshot is for illustration only*:
@@ -303,7 +340,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 14. Under **Source settings**, configure the following:
 
     - **Output stream name**: Enter `UserProfiles`.
-    - **Dataset**: Select `asal400_customerprofile_cosmosdb_SUFFIX`.
+    - **Dataset**: Select `asal300_customerprofile_cosmosdb_SUFFIX`.
 
     ![The source settings are configured as described.](media/data-flow-user-profiles-source2-settings.png "Source settings")
 
@@ -404,7 +441,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     - **Output stream name**: Enter `DerivedColumnsForMerge`.
     - **Incoming stream**: Select `JoinTopProductsWithPreferredProducts`.
-    - **Columns**: Provide the following information:
+    - **Columns**: Provide the following information (select the **+** to the right of a column to add a new column beneath it):
 
         | Column | Expression | Description |
         | --- | --- | --- |
@@ -427,7 +464,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
 
     - **Output stream name**: Enter `UserTopProductPurchasesASA`.
     - **Incoming stream**: Select `DerivedColumnsForMerge`.
-    - **Dataset**: Select `asal400_wwi_usertopproductpurchases_asa_SUFFIX`, which is the UserTopProductPurchases SQL table (where `SUFFIX` is your **student ID**).
+    - **Dataset**: Select `asal300_wwi_usertopproductpurchases_asa_SUFFIX`, which is the UserTopProductPurchases SQL table (where `SUFFIX` is your **student ID**).
     - **Options**: Check `Allow schema drift` and uncheck `Validate schema`.
 
     ![The sink settings are shown.](media/data-flow-user-profiles-new-sink-settings.png "Sink settings")
@@ -448,7 +485,7 @@ If you **did not** complete Exercise 1 in lab 1, where you configure the linked 
         | Input columns | Output columns |
         | --- | --- |
         | userId | UserId |
-        | DerivedColumnsForMerge@productId | ProductId |
+        | productId | ProductId |
         | itemsPurchasedLast12Months | ItemsPurchasedLast12Months |
         | isTopProduct | IsTopProduct |
         | isPreferredProduct | IsPreferredProduct |
@@ -475,13 +512,13 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
     ![The new pipeline context menu item is selected.](media/new-pipeline.png "New pipeline")
 
-3. In the **General** tab for the new pipeline, enter the following **Name**: `ASAL400 - Lab 2 - Write User Profile Data to ASA SUFFIX` (where `SUFFIX` is your **student ID**).
+3. In the **General** tab for the new pipeline, enter the following **Name**: `ASAL300 - Lab 2 - Write User Profile Data to ASA SUFFIX` (where `SUFFIX` is your **student ID**).
 
 4. Expand **Move & transform** within the Activities list, then drag the **Data flow** activity onto the pipeline canvas.
 
     ![Drag the data flow activity onto the pipeline canvas.](media/pipeline-campaign-analysis-drag-data-flow.png "Pipeline canvas")
 
-5. In the `Adding data flow` blade, select **Use existing data flow**, then select the `ASAL400 - Lab 2 - Write User Profile Data to ASA SUFFIX` existing data flow you created in the previous task (where `SUFFIX` is your **student ID**).
+5. In the `Adding data flow` blade, select **Use existing data flow**, then select the `lab2_write_user_profile_data_asa_SUFFIX` existing data flow you created in the previous task (where `SUFFIX` is your **student ID**).
 
     ![The adding data flow form is displayed with the described configuration.](media/pipeline-user-profiles-adding-data-flow.png "Adding data flow")
 
@@ -489,16 +526,14 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
 7. Select the mapping data flow activity on the canvas. Select the **Settings** tab, then expand **PolyBase** and configure the following:
 
-    - **Staging linked service**: Select the `asadatalake01` linked service.
+    - **Staging linked service**: Select the `asadatalakeXXXXXXX` linked service, which is named after your data lake.
     - **Staging storage folder**: Enter `staging/userprofiles`. The `userprofiles` folder will be automatically created for you during the first pipeline run.
 
     ![The mapping data flow activity settings are configured as described.](media/pipeline-user-profiles-data-flow-settings.png "Mapping data flow activity settings")
 
-8. Select **Publish all** to save your new pipeline.
+8. Select **Publish all**, then select **Publish** again to save your new pipeline.
 
     ![Publish all is highlighted.](media/publish-all-1.png "Publish all")
-
-> **Important:** if your earlier pipeline run failed due to experiencing capacity-related issues and you were required to skip ahead to a fallback task, you will need to skip ahead again. The next task and the exercise that follows depend on your ability to successfully run your pipeline. If you cannot successfully run your pipeline, **skip ahead** to **Exercise 4b (fallback)** to see a successful outcome.
 
 ### Task 3: Trigger, monitor, and analyze the user profile data pipeline
 
@@ -514,7 +549,7 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
     ![The Monitor hub menu item is selected.](media/monitor-hub.png "Monitor hub")
 
-4. Wait for the pipeline run to successfully complete. You may need to refresh the view.
+4. Wait for the pipeline run to successfully complete (4-5 minutes). You may need to refresh the view.
 
     ![The pipeline run succeeded.](media/pipeline-user-profiles-run-complete.png "Pipeline runs")
 
@@ -522,23 +557,27 @@ In order to run the new data flow, you need to create a new pipeline and add a d
 
     ![The data flow details icon is highlighted.](media/pipeline-user-profiles-activity-runs.png "Activity runs")
 
-6. The data flow details displays the data flow steps and processing details. In our example, processing time took around 45 seconds to process and output around 15 million rows. You can see which activities took longest to complete. The cluster startup time contributed almost three minutes to the total pipeline run.
+6. The data flow details displays the data flow steps and processing details. In our example, processing time took around 47 seconds to process and output around 1 million rows. You can see which activities took longest to complete. The cluster startup time contributed around two and-a-half minutes to the total pipeline run.
 
     ![The data flow details are displayed.](media/pipeline-user-profiles-data-flow-details.png "Data flow details")
 
-7. Select the `UserTopProductPurchasesASA` sink to view its details. We can see that 15,308,766 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 45 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
+7. Select the `UserTopProductPurchasesASA` sink to view its details. We can see that 1,622,203 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 47 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
 
     ![The sink details are displayed.](media/pipeline-user-profiles-data-flow-sink-details.png "Sink details")
+
+> **Important:** if the pipeline run failed due to experiencing capacity-related issues, you will need to skip ahead to the fallback exercise. The next task and the exercise that follows depend on your ability to successfully run your pipeline. If you cannot successfully run your pipeline, **skip ahead** to **Exercise 3b (fallback)** to see a successful outcome.
 
 ## Exercise 3: Create Synapse Spark notebook to find top products
 
 Now that we have processed, joined, and imported the user profile data, let's analyze it in greater detail. In this exercise, you will execute code to find the top 5 products for each user, based on which ones are both preferred and top, and have the most purchases in past 12 months. Then, you will calculate the top 5 products overall.
 
+### Task 1: Find top products
+
 1. Navigate to the **Data** hub.
 
     ![The Data menu item is highlighted.](media/data-hub.png "Data hub")
 
-2. Expand the `SqlPool01` database underneath the **Databases** section. Right-click the `wwi.UserTopProductPurchases` table, then select the **Load to DataFrame** menu item under the New notebook context menu.
+2. Expand the `SqlPool01` database underneath the **Databases** section. Right-click the `wwi.UserTopProductPurchases_SUFFIX` table (where `SUFFIX` is your **student ID**), then select the **Load to DataFrame** menu item under the New notebook context menu.
 
     ![The load to DataFrame new notebook option is highlighted.](media/synapse-studio-usertopproductpurchases-new-notebook.png "New notebook")
 
@@ -644,7 +683,7 @@ You should see an output similar to the following, which displays the top five p
 print('before filter: ', topPreferredProducts.count(), ', after filter: ', top5Products.count())
 ```
 
-The output should be similar to `before filter:  9662384 , after filter:  822044`.
+The output should be similar to `before filter:  9662384 , after filter:  85020`.
 
 12. Finally, let's calculate the top five products overall, based on those that are both preferred by customers and purchased the most. To do this, execute the following in a new cell:
 
@@ -666,11 +705,11 @@ In this cell, we grouped the top five preferred products by product ID, summed u
 +---------+-----+
 |ProductId|Total|
 +---------+-----+
-|     1974|23444|
-|     3861|22368|
-|     2050|22050|
-|     1465|21892|
-|     4649|21784|
+|      347| 4523|
+|     4833| 4377|
+|     3459| 4233|
+|     4246| 4155|
+|     2486| 4135|
 +---------+-----+
 ```
 
@@ -684,11 +723,11 @@ The **Monitor** hub contains, among other things, pipeline runs. When the pipeli
 
 ![The data flow details icon is highlighted.](media/pipeline-user-profiles-activity-runs.png "Activity runs")
 
-The data flow details displays the data flow steps and processing details. In our example, processing time took around 45 seconds to process and output around 15 million rows. You can see which activities took longest to complete. The cluster startup time contributed almost three minutes to the total pipeline run.
+The data flow details displays the data flow steps and processing details. In our example, processing time took around 47 seconds to process and output around 1 million rows. You can see which activities took longest to complete. The cluster startup time contributed around two and-a-half minutes to the total pipeline run.
 
 ![The data flow details are displayed.](media/pipeline-user-profiles-data-flow-details.png "Data flow details")
 
-Here we select the `UserTopProductPurchasesASA` sink to view its details. We can see that 15,308,766 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 45 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
+Here we select the `UserTopProductPurchasesASA` sink to view its details. We can see that 1,622,203 rows were calculated with a total of 30 partitions. It took around seven seconds to stage the data in ADLS Gen2 prior to writing the data to the SQL table. The total sink processing time in our case was around 47 seconds. It is also apparent that we have a hot partition that is significantly larger than the others. If we need to squeeze extra performance out of this pipeline, we can re-evaluate data partitioning to more evenly spread the partitions to better facilitate parallel data loading and filtering. We could also experiment with disabling staging to see if there's a processing time difference. Finally, the size of the SQL Pool plays a factor in how long it takes to ingest data into the sink.
 
 ![The sink details are displayed.](media/pipeline-user-profiles-data-flow-sink-details.png "Sink details")
 
@@ -701,7 +740,7 @@ The easiest way to create a new notebook to explore the `UserTopProductPurchases
 The notebook's language is set to `Spark (Scala)` by default. The first cell is populated with code that creates a new DataFrame from the `spark.read.sqlanalytics` method, which reads from the table in the SQL Pool. We update the cell to show the first 10 records (`df.head(10))` and to create a new temporary view named "df":
 
 ```java
-val df = spark.read.sqlanalytics("SQLPool02.wwi.UserTopProductPurchases") 
+val df = spark.read.sqlanalytics("SQLPool02.wwi.UserTopProductPurchases")
 df.head(10)
 
 df.createTempView("df")
@@ -789,7 +828,7 @@ Next, we create a new cell to compare the number of top preferred products to th
 print('before filter: ', topPreferredProducts.count(), ', after filter: ', top5Products.count())
 ```
 
-The output of this cell is: `before filter:  9662384 , after filter:  822044`.
+The output of this cell is: `before filter:  9662384 , after filter:  85020`.
 
 Finally, we calculate the top five products overall, based on those that are both preferred by customers and purchased the most:
 
@@ -813,10 +852,10 @@ This is the output of the query:
 +---------+-----+
 |ProductId|Total|
 +---------+-----+
-|     1974|23444|
-|     3861|22368|
-|     2050|22050|
-|     1465|21892|
-|     4649|21784|
+|      347| 4523|
+|     4833| 4377|
+|     3459| 4233|
+|     4246| 4155|
+|     2486| 4135|
 +---------+-----+
 ```

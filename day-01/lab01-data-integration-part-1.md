@@ -56,11 +56,23 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 > **Important note:** Throughout the labs, you will be asked to replace `SUFFIX` with your student ID value. This ensures unique names for any artifacts you create, in case you are sharing a Synapse Analytics workspace with others. Your student ID is the set of numbers at the end of your assigned username. For example, if your username is `odl_user_104871`, your student ID is `104871`.
 
-1. Open Synapse Analytics Studio, and then navigate to the **Manage** hub.
+1. Sign in to the Azure Portal with the provided credentials, navigate to the lab's resource group, and then open the Synapse workspace. Select **Launch Synapse Studio** in the top toolbar within the Overview blade. This will open Synapse Studio in a new browser tab. When you open Synapse Studio for the first time, select Close on the Getting Started dialog.
+
+    ![The Launch Synapse Studio link is highlighted.](media/launch-synapse-studio.png "Launch Synapse Studio")
+
+2. Within Synapse Studio, navigate to the **Manage** hub.
 
     ![The Manage menu item is highlighted.](media/manage-hub.png "Manage hub")
 
-2. Open **Linked services** and create a new linked service to the Azure Cosmos DB account for the lab. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**) and set the **Database name** value to `CustomerProfile`.
+3. Select **Linked services** in the left-hand menu, then select **+ New** to create a new linked service.
+
+    ![The Manage hub, Linked services menu item, and New button are all highlighted.](media/new-linked-service.png "Linked services")
+
+4. In the `New linked service` dialog, select the **Azure Cosmos DB (SQL API)** linked service, then select **Continue**.
+
+    ![The Azure Cosmos DB SQL API linked service is selected.](media/select-cosmos-db-linked-service.png "New linked service")
+
+5. Name the linked service `asacosmosdb01_SUFFIX` (where `SUFFIX` is your **student ID**), select the Cosmos DB account name and then select the **CustomerProfile** `Database name` value. Select **Create** to continue.
 
     ![New Azure Cosmos DB linked service.](media/create-cosmos-db-linked-service.png "New linked service")
 
@@ -76,7 +88,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 3. Create a new **Azure Cosmos DB (SQL API)** dataset with the following characteristics:
 
-    - **Name**: Enter `asal400_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_customerprofile_cosmosdb_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the Azure Cosmos DB linked service.
     - **Collection**: Select `OnlineUserProfile01`.
 
@@ -96,7 +108,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 7. Create a new **Azure Data Lake Storage Gen2** dataset with the **Parquet** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_sales_adlsgen2_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_sales_adlsgen2_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/sale-small` path.
     - **Import schema**: Select `From connection/store`.
@@ -105,7 +117,7 @@ Our data sources for labs 1 and 2 include files stored in ADLS Gen2 and Azure Co
 
 8. Create a new **Azure Data Lake Storage Gen2** dataset with the **JSON** format type with the following characteristics:
 
-    - **Name**: Enter `asal400_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
+    - **Name**: Enter `asal300_ecommerce_userprofiles_source_SUFFIX` (where `SUFFIX` is your **student ID**).
     - **Linked service**: Select the `asadatalakeXX` linked service that already exists.
     - **File path**: Browse to the `wwi-02/online-user-profiles-02` path.
     - **Import schema**: Select `From connection/store`.
@@ -132,7 +144,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
 2. Select the **Linked** tab, and then expand **Storage accounts**. Expand the `asadatalakeXX` primary ADLS Gen2 account and select `wwi-02`.
 
-3. Navigate to the `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20161231` folder. Right-click on the `sale-small-20171231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
+3. Navigate to the `sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231` folder. Right-click on the `sale-small-20171231-snappy.parquet` file, select **New SQL script**, then **Select TOP 100 rows**.
 
     ![The Data hub is displayed with the options highlighted.](media/data-hub-parquet-select-rows.png "Select TOP 100 rows")
 
@@ -140,7 +152,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
     ![The SQL on-demand connection is highlighted.](media/sql-on-demand-selected.png "SQL on-demand")
 
-5. Modify the SQL query to perform aggregates and grouping operations to better understand the data. Replace the query with the following, making sure that the file path in `OPENROWSET` matches your current file path:
+5. Modify the SQL query to perform aggregates and grouping operations to better understand the data. Replace the query with the following, making sure that the file path in `OPENROWSET` matches your current file path (replace `[asadatalakeXX]` with with the name of your Primary data lake account, as seen in the Data tab under Storage accounts (`asadatalakeXXXXXX`)):
 
     ```sql
     SELECT
@@ -150,7 +162,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
         SUM(Quantity) AS [(sum) Quantity]
     FROM
         OPENROWSET(
-            BULK 'https://asadatalake01.dfs.core.windows.net/wwi-02/sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231/sale-small-20171231-snappy.parquet',
+            BULK 'https://[asadatalakeXX].dfs.core.windows.net/wwi-02/sale-small/Year=2017/Quarter=Q4/Month=12/Day=20171231/sale-small-20171231-snappy.parquet',
             FORMAT='PARQUET'
         ) AS [r] GROUP BY r.TransactionDate, r.ProductId;
     ```
@@ -173,7 +185,7 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
     The output should be **339507246** records.
 
-    Optional: If you wish to keep this SQL script for future reference, select the Properties button, provide a descriptive name, such as `ASAL400 - Lab1 - Explore sales data`, then select **Publish all**.
+    Optional: If you wish to keep this SQL script for future reference, select the Properties button, provide a descriptive name, such as `ASAL300 - Lab1 - Explore sales data`, then select **Publish all**.
 
     ![The SQL Script properties is displayed with the new script name, and the Publish all button is highlighted.](media/rename-publish-sql-script.png "SQL Script Properties")
 
@@ -203,44 +215,43 @@ When you query Parquet files using Synapse SQL Serverless, you can explore the d
 
 7. The Spark engine can analyze the Parquet files and infer the schema. To do this, enter the following in the new cell:
 
-```python
-data_path.printSchema()
-```
+    ```python
+    data_path.printSchema()
+    ```
 
-Your output should look like the following:
+    Your output should look like the following:
 
-```text
-root
-    |-- TransactionId: string (nullable = true)
-    |-- CustomerId: integer (nullable = true)
-    |-- ProductId: short (nullable = true)
-    |-- Quantity: short (nullable = true)
-    |-- Price: decimal(29,2) (nullable = true)
-    |-- TotalAmount: decimal(29,2) (nullable = true)
-    |-- TransactionDate: integer (nullable = true)
-    |-- ProfitAmount: decimal(29,2) (nullable = true)
-    |-- Hour: byte (nullable = true)
-    |-- Minute: byte (nullable = true)
-    |-- StoreId: short (nullable = true)
-```
+    ```text
+    root
+        |-- TransactionId: string (nullable = true)
+        |-- CustomerId: integer (nullable = true)
+        |-- ProductId: short (nullable = true)
+        |-- Quantity: short (nullable = true)
+        |-- Price: decimal(29,2) (nullable = true)
+        |-- TotalAmount: decimal(29,2) (nullable = true)
+        |-- TransactionDate: integer (nullable = true)
+        |-- ProfitAmount: decimal(29,2) (nullable = true)
+        |-- Hour: byte (nullable = true)
+        |-- Minute: byte (nullable = true)
+        |-- StoreId: short (nullable = true)
+    ```
 
 8. Now let's use the dataframe to perform the same grouping and aggregate query we performed with the SQL Serverless pool. Create a new cell and enter the following:
 
-```python
-from pyspark.sql import SparkSession
-from pyspark.sql.types import *
-from pyspark.sql.functions import *
+    ```python
+    from pyspark.sql.types import *
+    from pyspark.sql.functions import *
 
-profitByDateProduct = (data_path.groupBy("TransactionDate","ProductId")
-    .agg(
-        sum("ProfitAmount").alias("(sum)ProfitAmount"),
-        round(avg("Quantity"), 4).alias("(avg)Quantity"),
-        sum("Quantity").alias("(sum)Quantity"))
-    .orderBy("TransactionDate"))
-profitByDateProduct.show(100)
-```
+    profitByDateProduct = (data_path.groupBy("TransactionDate","ProductId")
+        .agg(
+            sum("ProfitAmount").alias("(sum)ProfitAmount"),
+            round(avg("Quantity"), 4).alias("(avg)Quantity"),
+            sum("Quantity").alias("(sum)Quantity"))
+        .orderBy("TransactionDate"))
+    profitByDateProduct.show(100)
+    ```
 
- > We import required Python libraries to use aggregation functions and types defined in the schema to successfully execute the query.
+     > We import required Python libraries to use aggregation functions and types defined in the schema to successfully execute the query.
 
 ### Task 3: Query user profile JSON data with Azure Synapse Spark
 
@@ -248,193 +259,206 @@ In addition to the sales data, we have customer profile data from an e-commerce 
 
 1. Create a new cell in the Spark notebook, enter the following code, replace `<asadatalakeNNNNNN>` with your data lake name, and execute the cell:
 
-```python
-df = (spark.read \
-        .option("inferSchema", "true") \
-        .json("abfss://wwi-02@<asadatalakeNNNNNN>.dfs.core.windows.net/online-user-profiles-02/*.json", multiLine=True)
-    )
+    ```python
+    df = (spark.read \
+            .option("inferSchema", "true") \
+            .json("abfss://wwi-02@<asadatalakeNNNNNN>.dfs.core.windows.net/online-user-profiles-02/*.json", multiLine=True)
+        )
 
-df.printSchema()
-```
+    df.printSchema()
+    ```
 
-Your output should look like the following:
+    Your output should look like the following:
 
-```text
-root
-|-- topProductPurchases: array (nullable = true)
-|    |-- element: struct (containsNull = true)
-|    |    |-- itemsPurchasedLast12Months: long (nullable = true)
-|    |    |-- productId: long (nullable = true)
-|-- visitorId: long (nullable = true)
-```
+    ```text
+    root
+    |-- topProductPurchases: array (nullable = true)
+    |    |-- element: struct (containsNull = true)
+    |    |    |-- itemsPurchasedLast12Months: long (nullable = true)
+    |    |    |-- productId: long (nullable = true)
+    |-- visitorId: long (nullable = true)
+    ```
 
-> Notice that we are selecting all JSON files within the `online-user-profiles-02` directory. Each JSON file contains several rows, which is why we specified the `multiLine=True` option. Also, we set the `inferSchema` option to `true`, which instructs the Spark engine to review the files and create a schema based on the nature of the data.
+    > Notice that we are selecting all JSON files within the `online-user-profiles-02` directory. Each JSON file contains several rows, which is why we specified the `multiLine=True` option. Also, we set the `inferSchema` option to `true`, which instructs the Spark engine to review the files and create a schema based on the nature of the data.
 
 2. We have been using Python code in these cells up to this point. If we want to query the files using SQL syntax, one option is to create a temporary view of the data within the dataframe. Execute the following in a new cell to create a view named `user_profiles`:
 
-```python
-# create a view called user_profiles
-df.createOrReplaceTempView("user_profiles")
-```
+    ```python
+    # create a view called user_profiles
+    df.createOrReplaceTempView("user_profiles")
+    ```
 
-3. Create a new cell. Since we want to use SQL instead of Python, we use the `%%sql` magic to set the language of the cell to SQL. Execute the following code in the cell:
+3. Create a new cell and execute the following code:
 
-```sql
-%%sql
+    ```sql
+    spark.sql("SELECT * FROM user_profiles LIMIT 10").show()
+    ```
 
-SELECT * FROM user_profiles LIMIT 10
-```
+    Notice that the output shows nested data for `topProductPurchases`, which includes an array of `productId` and `itemsPurchasedLast12Months` values:
 
-Notice that the output shows nested data for `topProductPurchases`, which includes an array of `productId` and `itemsPurchasedLast12Months` values. You can expand the fields by clicking the right triangle in each row.
+    ```text
+    +--------------------+---------+
+    | topProductPurchases|visitorId|
+    +--------------------+---------+
+    |[[13, 3623], [5, ...|   117000|
+    |[[93, 713], [19, ...|   117001|
+    |[[25, 478], [15, ...|   117002|
+    |[[72, 2396], [8, ...|   117003|
+    |[[34, 2453], [73,...|   117004|
+    |[[69, 1564], [24,...|   117005|
+    |[[55, 3020], [58,...|   117006|
+    |[[63, 1988], [77,...|   117007|
+    |[[51, 4385], [77,...|   117008|
+    |[[41, 875], [14, ...|   117009|
+    +--------------------+---------+
+    ```
 
-![JSON nested output.](media/spark-json-output-nested.png "JSON output")
+    This makes analyzing the data a bit difficult. This is because the JSON file contents looks like the following:
 
-This makes analyzing the data a bit difficult. This is because the JSON file contents looks like the following:
-
-```json
-[
-{
-    "visitorId": 9529082,
-    "topProductPurchases": [
+    ```json
+    [
     {
-        "productId": 4679,
-        "itemsPurchasedLast12Months": 26
+        "visitorId": 9529082,
+        "topProductPurchases": [
+        {
+            "productId": 4679,
+            "itemsPurchasedLast12Months": 26
+        },
+        {
+            "productId": 1779,
+            "itemsPurchasedLast12Months": 32
+        },
+        {
+            "productId": 2125,
+            "itemsPurchasedLast12Months": 75
+        },
+        {
+            "productId": 2007,
+            "itemsPurchasedLast12Months": 39
+        },
+        {
+            "productId": 1240,
+            "itemsPurchasedLast12Months": 31
+        },
+        {
+            "productId": 446,
+            "itemsPurchasedLast12Months": 39
+        },
+        {
+            "productId": 3110,
+            "itemsPurchasedLast12Months": 40
+        },
+        {
+            "productId": 52,
+            "itemsPurchasedLast12Months": 2
+        },
+        {
+            "productId": 978,
+            "itemsPurchasedLast12Months": 81
+        },
+        {
+            "productId": 1219,
+            "itemsPurchasedLast12Months": 56
+        },
+        {
+            "productId": 2982,
+            "itemsPurchasedLast12Months": 59
+        }
+        ]
     },
     {
-        "productId": 1779,
-        "itemsPurchasedLast12Months": 32
+        ...
     },
     {
-        "productId": 2125,
-        "itemsPurchasedLast12Months": 75
-    },
-    {
-        "productId": 2007,
-        "itemsPurchasedLast12Months": 39
-    },
-    {
-        "productId": 1240,
-        "itemsPurchasedLast12Months": 31
-    },
-    {
-        "productId": 446,
-        "itemsPurchasedLast12Months": 39
-    },
-    {
-        "productId": 3110,
-        "itemsPurchasedLast12Months": 40
-    },
-    {
-        "productId": 52,
-        "itemsPurchasedLast12Months": 2
-    },
-    {
-        "productId": 978,
-        "itemsPurchasedLast12Months": 81
-    },
-    {
-        "productId": 1219,
-        "itemsPurchasedLast12Months": 56
-    },
-    {
-        "productId": 2982,
-        "itemsPurchasedLast12Months": 59
+        ...
     }
     ]
-},
-{
-    ...
-},
-{
-    ...
-}
-]
-```
+    ```
 
 4. PySpark contains a special [`explode` function](https://spark.apache.org/docs/latest/api/python/pyspark.sql.html?highlight=explode#pyspark.sql.functions.explode), which returns a new row for each element of the array. This will help flatten the `topProductPurchases` column for better readability or for easier querying. Execute the following in a new cell:
 
-```python
-from pyspark.sql.functions import udf, explode
+    ```python
+    from pyspark.sql.functions import udf, explode
 
-flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))
-flat.show(100)
-```
+    flat=df.select('visitorId',explode('topProductPurchases').alias('topProductPurchases_flat'))
+    flat.show(100)
+    ```
 
-In this cell, we created a new dataframe named `flat` that includes the `visitorId` field and a new aliased field named `topProductPurchases_flat`. As you can see, the output is a bit easier to read and, by extension, easier to query.
+    In this cell, we created a new dataframe named `flat` that includes the `visitorId` field and a new aliased field named `topProductPurchases_flat`. As you can see, the output is a bit easier to read and, by extension, easier to query.
 
-![The improved output is displayed.](media/spark-explode-output.png "Spark explode output")
+    ![The improved output is displayed.](media/spark-explode-output.png "Spark explode output")
 
 5. Create a new cell and execute the following code to create a new flattened version of the dataframe that extracts the `topProductPurchases_flat.productId` and `topProductPurchases_flat.itemsPurchasedLast12Months` fields to create new rows for each data combination:
 
-```python
-topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')
-    .orderBy('visitorId'))
+    ```python
+    topPurchases = (flat.select('visitorId','topProductPurchases_flat.productId','topProductPurchases_flat.itemsPurchasedLast12Months')
+        .orderBy('visitorId'))
 
-topPurchases.show(100)
-```
+    topPurchases.show(100)
+    ```
 
-In the output, notice that we now have multiple rows for each `visitorId`.
+    In the output, notice that we now have multiple rows for each `visitorId`.
 
-![The vistorId rows are highlighted.](media/spark-toppurchases-output.png "topPurchases output")
+    ![The vistorId rows are highlighted.](media/spark-toppurchases-output.png "topPurchases output")
 
 6. Let's order the rows by the number of items purchased in the last 12 months. Create a new cell and execute the following code:
 
-```python
-# Let's order by the number of items purchased in the last 12 months
-sortedTopPurchases = topPurchases.orderBy("itemsPurchasedLast12Months")
+    ```python
+    # Let's order by the number of items purchased in the last 12 months
+    sortedTopPurchases = topPurchases.orderBy("itemsPurchasedLast12Months")
 
-sortedTopPurchases.show(100)
-```
+    sortedTopPurchases.show(100)
+    ```
 
 7. How do we sort in reverse order? One might conclude that we could make a call like this: `topPurchases.orderBy("itemsPurchasedLast12Months desc")`. Try it in a new cell:
 
-```python
-topPurchases.orderBy("itemsPurchasedLast12Months desc")
-```
+    ```python
+    topPurchases.orderBy("itemsPurchasedLast12Months desc")
+    ```
 
-Why does this not work?
+    Why does this not work?
 
-- The `DataFrames` API is built upon an SQL engine.
-- There is a lot of familiarity with this API and SQL syntax in general.
-- The problem is that `orderBy(..)` expects the name of the column.
-- What we specified was an SQL expression in the form of **requests desc**.
-- What we need is a way to programmatically express such an expression.
-- This leads us to the second variant, `orderBy(Column)` and more specifically, the class `Column`.
+    - The `DataFrames` API is built upon an SQL engine.
+    - There is a lot of familiarity with this API and SQL syntax in general.
+    - The problem is that `orderBy(..)` expects the name of the column.
+    - What we specified was an SQL expression in the form of **requests desc**.
+    - What we need is a way to programmatically express such an expression.
+    - This leads us to the second variant, `orderBy(Column)` and more specifically, the class `Column`.
 
 8. The **Column** class is an object that encompasses more than just the name of the column, but also column-level-transformations, such as sorting in a descending order. Execute the following code in a new cell:
 
-```python
-sortedTopPurchases = (topPurchases
-    .orderBy( col("itemsPurchasedLast12Months").desc() ))
+    ```python
+    sortedTopPurchases = (topPurchases
+        .orderBy( col("itemsPurchasedLast12Months").desc() ))
 
-sortedTopPurchases.show(100)
-```
+    sortedTopPurchases.show(100)
+    ```
 
 9. How many *types* of products did each customer purchase? To figure this out, we need to group by `visitorId` and aggregate on the number of rows per customer. Execute the following code in a new cell:
 
-```python
-groupedTopPurchases = (sortedTopPurchases.select("visitorId")
-    .groupBy("visitorId")
-    .agg(count("*").alias("total"))
-    .orderBy("visitorId") )
+    ```python
+    groupedTopPurchases = (sortedTopPurchases.select("visitorId")
+        .groupBy("visitorId")
+        .agg(count("*").alias("total"))
+        .orderBy("visitorId") )
 
-groupedTopPurchases.show(100)
-```
+    groupedTopPurchases.show(100)
+    ```
 
-![The query output is displayed.](media/spark-grouped-top-purchases.png "Grouped top purchases output")
+    ![The query output is displayed.](media/spark-grouped-top-purchases.png "Grouped top purchases output")
 
 10. How many *total items* did each customer purchase? To figure this out, we need to group by `visitorId` and aggregate on the sum of `itemsPurchasedLast12Months` values per customer. Execute the following code in a new cell:
 
-```python
-groupedTopPurchases = (sortedTopPurchases.select("visitorId","itemsPurchasedLast12Months")
-    .groupBy("visitorId")
-    .agg(sum("itemsPurchasedLast12Months").alias("totalItemsPurchased"))
-    .orderBy("visitorId") )
+    ```python
+    groupedTopPurchases = (sortedTopPurchases.select("visitorId","itemsPurchasedLast12Months")
+        .groupBy("visitorId")
+        .agg(sum("itemsPurchasedLast12Months").alias("totalItemsPurchased"))
+        .orderBy("visitorId") )
 
-groupedTopPurchases.show(100)
-```
+    groupedTopPurchases.show(100)
+    ```
 
-![The query output is displayed.](media/spark-grouped-top-purchases-total-items.png "Grouped top total items output")
+    ![The query output is displayed.](media/spark-grouped-top-purchases-total-items.png "Grouped top total items output")
 
 ## Exercise 3: Import sales data with PolyBase and COPY using T-SQL
 
@@ -451,7 +475,7 @@ However, even with their familiarity with SQL, there are some things to consider
 | Fixed line delimiter | Supports custom column and row delimiters |
 | Complex to set up in code | Reduces amount of code |
 
-WWI has heard that PolyBase is generally faster than COPY, especially when working with large data sets. 
+WWI has heard that PolyBase is generally faster than COPY, especially when working with large data sets.
 
 In this exercise, you will help WWI compare ease of setup, flexibility, and speed between these loading strategies.
 
@@ -459,7 +483,7 @@ In this exercise, you will help WWI compare ease of setup, flexibility, and spee
 
 The `Sale` table has a columnstore index to optimize for read-heavy workloads. It is also used heavily for reporting and ad-hoc queries. To achieve the fastest loading speed and minimize the impact of heavy data inserts on the `Sale` table, WWI has decided to create a staging table for loads.
 
-In this task, you will create a new staging table named `SaleHeap` in a new schema named `wwi_staging`. You will define it as a [heap](https://docs.microsoft.com/sql/relational-databases/indexes/heaps-tables-without-clustered-indexes?view=sql-server-ver15) and use round-robin distribution. When WWI finalizes their data loading pipeline, they will load the data into `SaleHeap`, then insert from the heap table into `Sale`. Although this is a two-step process, the second step of inserting the rows to the production table does not incur data movement across the distributions.
+In this task, you will create a new staging table named `SaleHeap` in a new schema named `wwi_staging`. You will define it as a [heap](https://docs.microsoft.com/sql/relational-databases/indexes/heaps-tables-without-clustered-indexes?view=sql-server-ver15) and use round-robin distribution. When WWI finalizes their data loading pipeline, they will load the data into `SaleHeap`, then insert from the heap table into `Sale`.
 
 You will also create a new `Sale` clustered columnstore table within the `wwi_staging` to compare data load speeds.
 
@@ -569,7 +593,7 @@ PolyBase requires the following elements:
 
 2. Select **Run** from the toolbar menu to execute the SQL command.
 
-3. In the query window, replace the script with the following to create the external file format and external data table. Notice that we defined `TransactionId` as an `nvarchar(36)` field instead of `uniqueidentifier`. This is because external tables do not currently support `uniqueidentifier` columns:
+3. In the query window, replace the script with the following to create the external file format and external data table. Notice that we defined `TransactionId` as an `nvarchar(36)` field instead of `uniqueidentifier`. This is because external tables do not currently support `uniqueidentifier` columns (replace `SUFFIX` with your **student ID**):
 
     ```sql
     IF NOT EXISTS (SELECT * FROM sys.external_file_formats where name = 'ParquetFormat')
@@ -588,9 +612,9 @@ PolyBase requires the following elements:
     END
     GO
 
-    IF NOT EXISTS (SELECT * FROM sys.external_tables where name = 'Sales')
+    IF NOT EXISTS (SELECT * FROM sys.external_tables where name = 'Sales_SUFFIX')
     BEGIN
-        CREATE EXTERNAL TABLE [wwi_external].Sales
+        CREATE EXTERNAL TABLE [wwi_external].Sales_SUFFIX
             (
                 [TransactionId] [nvarchar](36)  NOT NULL,
                 [CustomerId] [int]  NOT NULL,
@@ -623,10 +647,10 @@ PolyBase requires the following elements:
     ```sql
     INSERT INTO [wwi_staging].[SaleHeap_SUFFIX]
     SELECT *
-    FROM [wwi_external].[Sales]
+    FROM [wwi_external].[Sales_SUFFIX]
     ```
 
-6. Select **Run** from the toolbar menu to execute the SQL command. It will take a few minutes to execute this command. **Take note** of how long it took to execute this query.
+6. Select **Run** from the toolbar menu to execute the SQL command. It will take a few minutes (5-6) to execute this command. **Take note** of how long it took to execute this query.
 
 7. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
 
@@ -640,7 +664,7 @@ PolyBase requires the following elements:
 
 Now let's see how to perform the same load operation with the COPY statement.
 
-1. In the query window, replace the script with the following to truncate the heap table and load data using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
+1. In the query window, replace the script with the following to truncate the heap table and load data using the COPY statement. Connect to `SQLPool01` if it is not selected. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
 
     ```sql
     TRUNCATE TABLE wwi_staging.SaleHeap_SUFFIX;
@@ -656,7 +680,7 @@ Now let's see how to perform the same load operation with the COPY statement.
     GO
     ```
 
-2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes to execute this command. **Take note** of how long it took to execute this query.
+2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes (4-5 minutes) to execute this command. **Take note** of how long it took to execute this query.
 
 3. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
 
@@ -672,7 +696,7 @@ Do the number of rows match for both load operations? Which activity was fastest
 
 For both of the load operations above, we inserted data into the heap table. What if we inserted into the clustered columnstore table instead? Is there really a performance difference? Let's find out!
 
-1. In the query window, replace the script with the following to load data into the clustered columnstore `Sale` table using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
+1. In the query window, replace the script with the following to load data into the clustered columnstore `Sale` table using the COPY statement. Connect to `SQLPool01` if it is not selected. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**) and DO NOT RUN this query:
 
     ```sql
     -- Replace <PrimaryStorage> with the workspace default storage account name and replace SUFFIX with your student ID.
@@ -685,17 +709,7 @@ For both of the load operations above, we inserted data into the heap table. Wha
     GO
     ```
 
-2. Select **Run** from the toolbar menu to execute the SQL command. It takes a few minutes to execute this command. **Take note** of how long it took to execute this query.
-
-3. In the query window, replace the script with the following to see how many rows were imported (replace `SUFFIX` with your **student ID**):
-
-    ```sql
-    SELECT COUNT_BIG(1) FROM wwi_staging.Sale_SUFFIX(nolock)
-    ```
-
-4. Select **Run** from the toolbar menu to execute the SQL command.
-
-What were the results? Did the load operation take more or less time writing to `Sale` table vs. the heap (`SaleHeap`) table?
+2. In the interest of time, we will not run this query during the lab. However, if you did, you would find that it takes longer to write to the `Sale` table vs. the heap (`SaleHeap`) table.
 
 In our case, the results are as follows:
 
@@ -716,7 +730,7 @@ WWI has a nightly process that ingests regional sales data from a partner analyt
 
 The data has the following fields: `Date`, `NorthAmerica`, `SouthAmerica`, `Europe`, `Africa`, and `Asia`. They must process this data and store it in Synapse Analytics.
 
-1. In the query window, replace the script with the following to create the `DailySalesCounts` table and load data using the COPY statement. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
+1. In the query window, replace the script with the following to create the `DailySalesCounts` table and load data using the COPY statement. Connect to `SQLPool01` if it is not selected. Be sure to replace `<PrimaryStorage>` with the default storage account name for your workspace (replace `SUFFIX` with your **student ID**):
 
     ```sql
     CREATE TABLE [wwi_staging].DailySalesCounts_SUFFIX
@@ -805,7 +819,7 @@ Let's try this same operation using PolyBase.
     FROM [wwi_external].[DailySalesCounts]
     ```
 
-2. Select **Run** from the toolbar menu to execute the SQL command.
+2. Select **Run** from the toolbar menu to execute the SQL command. Connect to `SQLPool01` if it is not selected.
 
 You should see an error similar to: `Failed to execute query. Error: HdfsBridge::recordReaderFillBuffer - Unexpected error encountered filling record reader buffer: HadoopExecutionException: Too many columns in the line.`.
 

@@ -31,12 +31,11 @@ For the remainder of this guide, the following terms will be used for various AS
 
 Azure Synapse Analytics (ASA) is a powerful solution that handles security for many of the resources that it creates and manages. In order to run ASA, however, some foundational security measures need to be put in place to ensure the infrastructure that it relies upon is secure. In this exercise, we will walk through securing the supporting infrastructure of ASA.
 
-
 ### Task 1 - Observing the SQL Active Directory admin
 
- The SQL Active Directory Admin can be a user (the default) or group (best practice so that more than one user can be provided these permissions) security principal. The principal assigned to this will have administrative permissions to the SQL Pools contained in the workspace. 
+ The SQL Active Directory Admin can be a user (the default) or group (best practice so that more than one user can be provided these permissions) security principal. The principal assigned to this will have administrative permissions to the SQL Pools contained in the workspace.
 
-1. In the **Azure Portal**, open the `Synapse-L400-Workshop-XXXXX` resource group and from the list of resources open your Synapse workspace (do not launch Synapse Studio).
+1. In the **Azure Portal**, open the `Synapse-L300-Workshop-XXXXX` resource group and from the list of resources open your Synapse workspace (do not launch Synapse Studio).
 
 2. From the left menu, select **SQL Active Directory admin** and observe who is listed as a SQL Active Directory Admin. Is it a user or group?
 
@@ -52,31 +51,25 @@ Having robust Internet security is a must for every technology system. One way t
 
    ![The Synapse Workspace screen is displayed, with the Firewalls item selected from the left menu.](media/lab5_synapseworkspacefirewallmenu.png)
 
-3. Notice that an IP Firewall rule of `Allow All` has already been craeted for you in the lab environment. If you wanted to add your specific IP address you would instead select **+ Add Client IP** from the taskbar menu (you should not do this in this lab).
+3. Notice that an IP Firewall rule of `Allow All` has already been created for you in the lab environment. If you wanted to add your specific IP address you would instead select **+ Add Client IP** from the taskbar menu (you should not do this in this lab).
 
     ![On the Synapse Workspace screen, the + Add Client IP button is selected from the toolbar menu.](media/lab5_synapsefirewalladdclientipmenu.png)  
 
-
 > **Note**: When connecting to Synapse from your local network, certain ports need to be open. To support the functions of Synapse Studio, ensure outgoing TCP ports 80, 443, and 1143, and UDP port 53 are open.
 
-
 ## Exercise 2 - Securing the Azure Synapse Analytics workspace and managed services
-
 
 ### Task 1 - Managing secrets with Azure Key Vault
 
 When dealing with connectivity to external data sources and services, sensitive connection information such as passwords and access keys should be properly handled. It is recommended that this type of information be stored in an Azure Key Vault. Leveraging Azure Key Vault not only protects against secrets being compromised, it also serves as a central source of truth; meaning that if a secret value needs to be updated (such as when cycling access keys on a storage account), it can be changed in one place and all services consuming this key will start pulling the new value immediately. Azure Key Vault encrypts and decrypts information transparently using 256-bit AES encryption, which is FIPS 140-2 compliant.
 
-1. In the **Azure Portal**, open the `Synapse-L400-Workshop-NNNNNN` resource group and from the list of resources and select the Key vault resource.
-
+1. In the **Azure Portal**, open the `Synapse-L300-Workshop-NNNNNN` resource group and from the list of resources and select the Key vault resource.
 
 2. From the left menu, under Settings, select **Access Policies**.
 
-3. Observe that Managed Service Identity (MSI) representing your Synapse workpace (it has a name similar to `asaworkspaceNNNNNN`) has already been listed under Application and it has 2 selected Secret Premissions.
-
+3. Observe that Managed Service Identity (MSI) representing your Synapse workspace (it has a name similar to `asaworkspaceNNNNNN`) has already been listed under Application and it has 2 selected Secret Permissions.
 
 4. Select the drop-down that reads `2 selected` under `Secret Permissions`, observe that Get (which allows your workspace to retrieve the values of secrets from Key Vault) and List (which allows your workspace to enumerate secrets) are set.
-
 
 ### Task 2 - Use Azure Key Vault for secrets when creating Linked Services
 
@@ -156,8 +149,7 @@ It is recommended to store any secrets that are part of your pipeline in Azure K
 
     ![In the output of the pipeline, the Set variable 1 activity is selected with its input displayed. The input shows the value of NotASecret that was pulled from the key vault being assigned to the SecretValue pipeline variable.](media/lab5_pipelinesetvariableactivityinputresults.png)
 
-    > **Note**: On the **Web1** activity, on the **General** tab there is a **Secure Output** checkbox that when checked will prevent the secret value from being logged in plain text, for instance in the pipeline run, you would see a masked value ***** instead of the actual value retrieved from the Key vault. Any activity that consumes this value should also have their **Secure Input** checkbox checked.
-
+    > **Note**: On the **Web1** activity, on the **General** tab there is a **Secure Output** checkbox that when checked will prevent the secret value from being logged in plain text, for instance in the pipeline run, you would see a masked value \*\*\*\*\* instead of the actual value retrieved from the Key vault. Any activity that consumes this value should also have their **Secure Input** checkbox checked.
 
 ### Task 4 - Secure Azure Synapse Analytics SQL Pools
 
@@ -171,7 +163,6 @@ Transparent Data Encryption (TDE) is a feature of SQL Server that provides encry
 3. If your SQL Pool is not currently taking advantage of TDE, slide the **Data encryption** slider to the **ON** position, and select **Save**.
 
     ![On the SQL Pool Transparent Data Encryption screen, the Data Encryption toggle is set to the ON position and the Save button is highlighted in the toolbar.](media/lab5_sqlpoolenabletdeform.png)
-
 
 ## Exercise 3 - Securing Azure Synapse Analytics workspace data
 
@@ -239,18 +230,12 @@ It is important to identify data columns of that hold sensitive information. Typ
 
 ## Reference
 
-- [IP Firewalls](https://github.com/Azure/azure-synapse-analytics/blob/master/docs/security/synapse-workspace-ip-firewall.md)
-- [Synapse Workspace Managed Identity](https://github.com/Azure/azure-synapse-analytics/blob/master/docs/securitsynapse-workspace-managed-identity.md)
-- [Synapse Managed VNet](https://github.com/Azure/azure-synapse-analytics/blob/master/docs/securitsynapse-workspace-managed-vnet.md)
-- [Synapse Managed Private Endpoints](https://github.com/Azure/azure-synapse-analytics/blob/master/docs/securitsynapse-workspace-managed-private-endpoints.md)
-- [Setting up Access Control](https://github.com/Azure/azure-synapse-analytics/blob/master/docs/securithow-to-set-up-access-control.md)
-- [Connect to Synapse Workspace using Private Endpoints](https://github.com/Azure/azure-synapse-analytics/blob/master/docsecurity/how-to-connect-to-workspace-with-private-links.md)
-- [Create Managed Private Endpoints](https://github.com/Azure/azure-synapse-analytics/blob/master/docs/securithow-to-create-managed-private-endpoints.md)
-- [Granting Permissions to Workspace Managed Identity](https://github.com/Azure/azure-synapse-analytics/blob/master/docsecurity/how-to-grant-worspace-managed-identity-permissions.md)
-
-## Other Resources
-
-- [Managing access to workspaces, data and pipelines](https://github.com/Azure/azure-synapse-analytics/blob/master/onboarding/synapse-manage-access-workspace.md)
-- [Easily read and write safely with Spark into/from SQL Pool](https://github.com/Azure/azure-synapse-analytics/blob/master/docs/previewchecklist/tutorial_4_modern_prep_and_transform.md)
-- [Connect SQL Serverless with Power BI desktop](https://github.com/Azure/azure-synapse-analytics/blob/master/sql-analytics/tutorial-power-bi-professional.md)
-- [Control storage account access for SQL Analytics Serverless](https://github.com/Azure/azure-synapse-analytics/blob/master/sql-analytics/development-storage-files-storage-access-control.md)
+- [IP Firewalls](https://docs.microsoft.com/azure/synapse-analytics/security/synapse-workspace-ip-firewall)
+- [Synapse Workspace Managed Identity](https://docs.microsoft.com/azure/synapse-analytics/security/synapse-workspace-managed-identity)
+- [Synapse Managed VNet](https://docs.microsoft.com/azure/synapse-analytics/security/synapse-workspace-managed-vnet)
+- [Synapse Managed Private Endpoints](https://docs.microsoft.com/azure/synapse-analytics/security/synapse-workspace-managed-private-endpoints)
+- [Manage access control to workspaces, data, and pipelines](https://docs.microsoft.com/en-us/azure/synapse-analytics/sql/access-control)
+- [Setting up Access Control](https://docs.microsoft.com/azure/synapse-analytics/security/how-to-set-up-access-control)
+- [Connect to Synapse Workspace using Private Endpoints](https://docs.microsoft.com/azure/synapse-analytics/security/how-to-connect-to-workspace-with-private-links)
+- [Create Managed Private Endpoints](https://docs.microsoft.com/azure/synapse-analytics/security/how-to-create-managed-private-endpoints)
+- [Granting Permissions to Workspace Managed Identity](https://docs.microsoft.com/azure/synapse-analytics/security/how-to-grant-workspace-managed-identity-permissions)
