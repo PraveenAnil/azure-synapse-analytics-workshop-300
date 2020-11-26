@@ -212,7 +212,7 @@ Import-Module Az.CosmosDB
 
 #download the git repo...
 Write-Host "Download Git repo." -ForegroundColor Green -Verbose
-git clone https://github.com/PraveenAnil/azure-synapse-analytics-workshop-400.git synapse-ws-L400
+git clone https://github.com/PraveenAnil/azure-synapse-analytics-workshop-300.git synapse-ws-L400
 
 $LabFilesDirectory = "C:\LabFiles"
 
