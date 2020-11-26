@@ -193,7 +193,6 @@
               "displayName": "VM Extension"
             },
             "dependsOn": [
-                "[concat('Microsoft.Compute/virtualMachines/', variables('vmName') , '/extensions/', variables('dscname'))]",
                 "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
               ],
             "properties": {
@@ -203,37 +202,14 @@
               "autoUpgradeMinorVersion": true,
               "settings": {
                 "fileUris": [
-                  "https://raw.githubusercontent.com/PraveenAnil/azure-synapse-analytics-workshop-400/master/artifacts/environment-setup/spektra/post-install-script01.ps1"
+                  "https://raw.githubusercontent.com/PraveenAnil/azure-synapse-analytics-workshop-300/master/artifacts/environment-setup/spektra/post-install-script01.ps1"
                 ]
               },
               "protectedSettings": {
                 "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File post-install-script01.ps1', variables('postInstallParameters'))]"
               }
             }
-          },
-          {
-		"apiVersion": "2018-10-01",	  
-          "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('vmName'), '/', 'dscextension')]",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('vmName'))]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.73",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "modulesUrl": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration.zip",
-              "configurationFunction": "Configuration.ps1\\AddSessionHost",
-              "properties": {
-                "hostPoolName": "[parameters('hostPoolName')]",
-                "registrationInfoToken": "[parameters('hostpoolToken')]"
-              }
-            }
           }
-        }
         ]
       }
     ],
