@@ -186,7 +186,7 @@ $cred = new-object -typename System.Management.Automation.PSCredential -argument
 Connect-AzAccount -Credential $cred | Out-Null
  
 # Template deployment
-$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-L400*" }).ResourceGroupName
+$resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*-L300*" }).ResourceGroupName
 $deploymentId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 
 $url = "https://raw.githubusercontent.com/solliancenet/azure-synapse-analytics-workshop-400/master/artifacts/environment-setup/spektra/deploy.parameters.post.json"
@@ -203,7 +203,7 @@ New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateUri
 
 #install sql server cmdlets
 Write-Host "Installing SQL Module." -ForegroundColor Green -Verbose
-Install-Module -Name SqlServer
+Install-Module -Name SqlServer -Force
 
 #install cosmosdb
 Write-Host "Installing CosmosDB Module." -ForegroundColor Green -Verbose
@@ -212,7 +212,7 @@ Import-Module Az.CosmosDB
 
 #download the git repo...
 Write-Host "Download Git repo." -ForegroundColor Green -Verbose
-git clone https://github.com/PraveenAnil/azure-synapse-analytics-workshop-300.git synapse-ws-L400
+git clone https://github.com/PraveenAnil/azure-synapse-analytics-workshop-300.git synapse-ws-L300
 
 $LabFilesDirectory = "C:\LabFiles"
 
