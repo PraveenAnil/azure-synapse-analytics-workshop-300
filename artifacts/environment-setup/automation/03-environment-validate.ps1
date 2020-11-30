@@ -11,7 +11,7 @@ $InformationPreference = "Continue"
 #
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
 $IsCloudLabs = Test-Path C:\LabFiles\AzureCreds.ps1;
-$iscloudlabs = $false;
+$iscloudlabs = $true;
 
 if($IsCloudLabs){
         Remove-Module solliance-synapse-automation
