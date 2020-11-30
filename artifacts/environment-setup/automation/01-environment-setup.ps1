@@ -9,7 +9,7 @@ $InformationPreference = "Continue"
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
 
 $IsCloudLabs = Test-Path C:\LabFiles\AzureCreds.ps1;
-$iscloudlabs = $true;
+$iscloudlabs = $false;
 
 if($IsCloudLabs){
         Remove-Module solliance-synapse-automation
@@ -74,6 +74,7 @@ $resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName 
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
+$global:logindomain = (Get-AzContext). Tenant
 
 $workspaceName = "asaworkspace$($uniqueId)"
 $cosmosDbAccountName = "asacosmosdb$($uniqueId)"
@@ -164,8 +165,8 @@ if ($download)
         $dataLakeStorageUrl = "https://"+ $dataLakeAccountName + ".dfs.core.windows.net/"
         $dataLakeStorageBlobUrl = "https://"+ $dataLakeAccountName + ".blob.core.windows.net/"
         $dataLakeStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -AccountName $dataLakeAccountName)[0].Value
-        $dataLakeContext = New-AzureStorageContext -StorageAccountName $dataLakeAccountName -StorageAccountKey $dataLakeStorageAccountKey
-        $destinationSasKey = New-AzureStorageContainerSASToken -Container "wwi-02" -Context $dataLakeContext -Permission rwdl
+        $dataLakeContext = New-AzStorageContext -StorageAccountName $dataLakeAccountName -StorageAccountKey $dataLakeStorageAccountKey
+        $destinationSasKey = New-AzStorageContainerSASToken -Container "wwi-02" -Context $dataLakeContext -Permission rwdl
 
         Write-Information "Copying single files from the public data account..."
         $singleFiles = @{
@@ -205,9 +206,10 @@ if ($download)
         }
 
         Write-Information "Copying sample JSON data from the repository..."
-        $rawData = "./rawdata/json-data"
-        $destination = $dataLakeStorageUrl +"wwi-02/product-json" + $destinationSasKey
-        azcopy copy $rawData $destination --recursive
+        $rawData = $publicDataUrl + "wwi-02/security/"
+       $rawData = "https://l400southcentralus.blob.core.windows.net/wwi-02/security//c+Kefc3kFs9PvQs1l/K/e2tJPzI5kWkZdy8Rvk0+5LG61BGi0ixJnBPeGJRTLVHUyba3b7M9UMj6aqeKXQebg=="
+        $destination = $dataLakeStorageUrl +"wwi-02/security/customerinfo.csv/" + $destinationSasKey
+        azcopy copy $rawData $destination --recursive=true
 }
 
 Write-Information "Start the $($sqlPoolName) SQL pool if needed."
@@ -486,7 +488,9 @@ $container = Get-AzCosmosDBSqlContainer `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
         -Name $cosmosDbContainer
 
-Set-AzCosmosDBSqlContainer -ResourceGroupName $resourceGroupName `
+
+
+Update-AzCosmosDBSqlContainer -ResourceGroupName $resourceGroupName `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
         -Name $cosmosDbContainer -Throughput 10000 `
         -PartitionKeyKind $container.Resource.PartitionKey.Kind `
@@ -529,7 +533,7 @@ $container = Get-AzCosmosDBSqlContainer `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
         -Name $cosmosDbContainer
 
-Set-AzCosmosDBSqlContainer -ResourceGroupName $resourceGroupName `
+Update-AzCosmosDBSqlContainer -ResourceGroupName $resourceGroupName `
         -AccountName $cosmosDbAccountName -DatabaseName $cosmosDbDatabase `
         -Name $cosmosDbContainer -Throughput 400 `
         -PartitionKeyKind $container.Resource.PartitionKey.Kind `
