@@ -9,7 +9,6 @@ $InformationPreference = "Continue"
 # TODO: Keep all required configuration in C:\LabFiles\AzureCreds.ps1 file
 
 $IsCloudLabs = Test-Path C:\LabFiles\AzureCreds.ps1;
-$iscloudlabs = $false;
 
 if($IsCloudLabs){
         Remove-Module solliance-synapse-automation
@@ -161,7 +160,7 @@ if ($download)
         $azCopyCommand = (Get-ChildItem -Path ".\" -Recurse azcopy.exe).Directory.FullName
         $Env:Path += ";"+ $azCopyCommand
 
-        $publicDataUrl = "https://solliancepublicdata.blob.core.windows.net/"
+        $publicDataUrl = "https://l400southcentralus.blob.core.windows.net/"
         $dataLakeStorageUrl = "https://"+ $dataLakeAccountName + ".dfs.core.windows.net/"
         $dataLakeStorageBlobUrl = "https://"+ $dataLakeAccountName + ".blob.core.windows.net/"
         $dataLakeStorageAccountKey = (Get-AzStorageAccountKey -ResourceGroupName $resourceGroupName -AccountName $dataLakeAccountName)[0].Value
