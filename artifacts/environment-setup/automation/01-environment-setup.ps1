@@ -10,12 +10,11 @@ $InformationPreference = "Continue"
 
 $IsCloudLabs = Test-Path C:\LabFiles\AzureCreds.ps1;
 
-if($IsCloudLabs){
         Remove-Module solliance-synapse-automation
         Import-Module ".\artifacts\environment-setup\solliance-synapse-automation"
 
         . C:\LabFiles\AzureCreds.ps1
-
+        cd "C:\LabFiles\synapse-ws-L300"
         $userName = $AzureUserName                # READ FROM FILE
         $password = $AzurePassword                # READ FROM FILE
         $clientId = $TokenGeneratorClientId       # READ FROM FILE
@@ -25,7 +24,7 @@ if($IsCloudLabs){
         $cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $userName, $SecurePassword
         
         Connect-AzAccount -Credential $cred | Out-Null
-
+        az login -u $userName -p $password
         $ropcBodyCore = "client_id=$($clientId)&username=$($userName)&password=$($password)&grant_type=password"
         $global:ropcBodySynapse = "$($ropcBodyCore)&scope=https://dev.azuresynapse.net/.default"
         $global:ropcBodyManagement = "$($ropcBodyCore)&scope=https://management.azure.com/.default"
@@ -37,37 +36,7 @@ if($IsCloudLabs){
         $dataflowsPath = ".\artifacts\environment-setup\dataflows"
         $pipelinesPath = ".\artifacts\environment-setup\pipelines"
         $sqlScriptsPath = ".\artifacts\environment-setup\sql"
-} else {
-        if(Get-Module -Name solliance-synapse-automation){
-                Remove-Module solliance-synapse-automation
-        }
-        Import-Module "..\solliance-synapse-automation"
 
-        #Different approach to run automation in Cloud Shell
-        $subs = Get-AzSubscription | Select-Object -ExpandProperty Name
-        if($subs.GetType().IsArray -and $subs.length -gt 1){
-                $subOptions = [System.Collections.ArrayList]::new()
-                for($subIdx=0; $subIdx -lt $subs.length; $subIdx++){
-                        $opt = New-Object System.Management.Automation.Host.ChoiceDescription "$($subs[$subIdx])", "Selects the $($subs[$subIdx]) subscription."   
-                        $subOptions.Add($opt)
-                }
-                $selectedSubIdx = $host.ui.PromptForChoice('Enter the desired Azure Subscription for this lab','Copy and paste the name of the subscription to make your choice.', $subOptions.ToArray(),0)
-                $selectedSubName = $subs[$selectedSubIdx]
-                Write-Information "Selecting the $selectedSubName subscription"
-                Select-AzSubscription -SubscriptionName $selectedSubName
-        }
-        
-        $userName = ((az ad signed-in-user show) | ConvertFrom-JSON).UserPrincipalName
-        $global:sqlPassword = Read-Host -Prompt "Enter the SQL Administrator password you used in the deployment" -AsSecureString
-        $global:sqlPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($sqlPassword))
-
-        $reportsPath = "..\reports"
-        $templatesPath = "..\templates"
-        $datasetsPath = "..\datasets"
-        $dataflowsPath = "..\dataflows"
-        $pipelinesPath = "..\pipelines"
-        $sqlScriptsPath = "..\sql"
-}
 
 $resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName -like "*L300*" }).ResourceGroupName
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
@@ -192,7 +161,8 @@ if ($download)
                 data2019 = "wwi-02/sale-small,wwi-02/sale-small/Year=2019/"
                 profile01 = "wwi-02,wwi-02/online-user-profiles-01/"
                 profile02 = "wwi-02,wwi-02/online-user-profiles-02/"
-                analytics = "wwi-02,wwi-02/campaign-analytics"
+                analytics = "wwi-02,wwi-02/campaign-analytics",
+                security = "wwi-02,wwi-02/security"
         }
 
         foreach ($dataDirectory in $dataDirectories.Keys) {
@@ -204,11 +174,11 @@ if ($download)
                 azcopy copy $source $destination --recursive=true
         }
 
-        Write-Information "Copying sample JSON data from the repository..."
-        $rawData = $publicDataUrl + "wwi-02/security/"
-       $rawData = "https://l400southcentralus.blob.core.windows.net/wwi-02/security//c+Kefc3kFs9PvQs1l/K/e2tJPzI5kWkZdy8Rvk0+5LG61BGi0ixJnBPeGJRTLVHUyba3b7M9UMj6aqeKXQebg=="
-        $destination = $dataLakeStorageUrl +"wwi-02/security/customerinfo.csv/" + $destinationSasKey
-        azcopy copy $rawData $destination --recursive=true
+       # Write-Information "Copying sample JSON data from the repository..."
+        #$rawData = $publicDataUrl + "wwi-02/security/"
+       #$rawData = "https://l400southcentralus.blob.core.windows.net/wwi-02/security//c+Kefc3kFs9PvQs1l/K/e2tJPzI5kWkZdy8Rvk0+5LG61BGi0ixJnBPeGJRTLVHUyba3b7M9UMj6aqeKXQebg=="
+       # $destination = $dataLakeStorageUrl +"wwi-02/security/customerinfo.csv/" + $destinationSasKey
+       # azcopy copy $rawData $destination --recursive=true
 }
 
 Write-Information "Start the $($sqlPoolName) SQL pool if needed."
