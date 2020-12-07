@@ -42,7 +42,7 @@ $resourceGroupName = (Get-AzResourceGroup | Where-Object { $_.ResourceGroupName 
 $uniqueId =  (Get-AzResourceGroup -Name $resourceGroupName).Tags["DeploymentId"]
 $subscriptionId = (Get-AzContext).Subscription.Id
 $tenantId = (Get-AzContext).Tenant.Id
-$global:logindomain = (Get-AzContext). Tenant
+$global:logindomain = (Get-AzContext).Tenant.Id
 
 $workspaceName = "asaworkspace$($uniqueId)"
 $cosmosDbAccountName = "asacosmosdb$($uniqueId)"
@@ -236,6 +236,8 @@ $result
 Write-Information "Create tables in the [wwi_ml] schema in $($sqlPoolName)"
 
 $dataLakeAccountKey = List-StorageAccountKeys -SubscriptionId $subscriptionId -ResourceGroupName $resourceGroupName -Name $dataLakeAccountName
+ (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\05-create-tables-in-wwi-ml-schema.sql") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_NAME#", "$dataLakeAccountName"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\05-create-tables-in-wwi-ml-schema.sql"
+ (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\05-create-tables-in-wwi-ml-schema.sql") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_KEY#", "$dataLakeAccountKey"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\05-create-tables-in-wwi-ml-schema.sql"
 $params = @{ 
         DATA_LAKE_ACCOUNT_NAME = $dataLakeAccountName  
         DATA_LAKE_ACCOUNT_KEY = $dataLakeAccountKey 
@@ -245,7 +247,8 @@ $result
 
 
 Write-Information "Create tables in the [wwi_security] schema in $($sqlPoolName)"
-
+ (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_NAME#", "$dataLakeAccountName"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema"
+ (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_KEY#", "$dataLakeAccountKey"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema"
 $params = @{ 
         DATA_LAKE_ACCOUNT_NAME = $dataLakeAccountName  
         DATA_LAKE_ACCOUNT_KEY = $dataLakeAccountKey
