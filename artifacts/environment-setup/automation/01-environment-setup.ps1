@@ -161,7 +161,7 @@ if ($download)
                 data2019 = "wwi-02/sale-small,wwi-02/sale-small/Year=2019/"
                 profile01 = "wwi-02,wwi-02/online-user-profiles-01/"
                 profile02 = "wwi-02,wwi-02/online-user-profiles-02/"
-                analytics = "wwi-02,wwi-02/campaign-analytics",
+                analytics = "wwi-02,wwi-02/campaign-analytics"
                 security = "wwi-02,wwi-02/security"
         }
 
