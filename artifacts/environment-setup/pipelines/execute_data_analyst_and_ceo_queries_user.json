@@ -32,7 +32,7 @@
                                     "queryTimeout": "02:00:00"
                                 },
                                 "dataset": {
-                                    "referenceName": "wwi02_sale_small_workload_01_asa_#USER_CONTEXT#",
+                                    "referenceName": "wwi02_sale_small_workload_01_asa",
                                     "type": "DatasetReference"
                                 }
                             }
@@ -70,7 +70,7 @@
                                     "queryTimeout": "02:00:00"
                                 },
                                 "dataset": {
-                                    "referenceName": "wwi02_sale_small_workload_02_asa_#USER_CONTEXT#",
+                                    "referenceName": "wwi02_sale_small_workload_02_asa",
                                     "type": "DatasetReference"
                                 }
                             }
