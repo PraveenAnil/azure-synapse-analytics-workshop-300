@@ -217,7 +217,7 @@ git clone https://github.com/PraveenAnil/azure-synapse-analytics-workshop-300.gi
 $LabFilesDirectory = "C:\LabFiles"
 
 $WebClient = New-Object System.Net.WebClient
-$WebClient.DownloadFile("https://raw.githubusercontent.com/PraveenAnil/azure-synapse-analytics-workshop-400/master/artifacts/environment-setup/spektra/logontask.ps1","C:\LabFiles\logontask.ps1")
+$WebClient.DownloadFile("https://raw.githubusercontent.com/PraveenAnil/azure-synapse-analytics-workshop-300/master/artifacts/environment-setup/spektra/logontask.ps1","C:\LabFiles\logontask.ps1")
 
 #Enable Autologon
 $AutoLogonRegPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
