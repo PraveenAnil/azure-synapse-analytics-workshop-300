@@ -247,8 +247,8 @@ $result
 
 
 Write-Information "Create tables in the [wwi_security] schema in $($sqlPoolName)"
- (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_NAME#", "$dataLakeAccountName"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema"
- (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_KEY#", "$dataLakeAccountKey"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema"
+ (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema.sql") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_NAME#", "$dataLakeAccountName"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema.sql"
+ (Get-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema.sql") | ForEach-Object {$_ -Replace "#DATA_LAKE_ACCOUNT_KEY#", "$dataLakeAccountKey"} | Set-Content -Path "C:\LabFiles\synapse-ws-L300\artifacts\environment-setup\sql\06-create-tables-in-wwi-security-schema.sql"
 $params = @{ 
         DATA_LAKE_ACCOUNT_NAME = $dataLakeAccountName  
         DATA_LAKE_ACCOUNT_KEY = $dataLakeAccountKey
