@@ -11,6 +11,7 @@ $InformationPreference = "Continue"
 $IsCloudLabs = Test-Path C:\LabFiles\AzureCreds.ps1;
 
         Remove-Module solliance-synapse-automation
+        cd "C:\LabFiles\synapse-ws-L300"
         Import-Module ".\artifacts\environment-setup\solliance-synapse-automation"
 
         . C:\LabFiles\AzureCreds.ps1
